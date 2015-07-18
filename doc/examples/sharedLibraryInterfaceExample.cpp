@@ -16,6 +16,7 @@
 
 #include <iostream>
 #include <ale_interface.hpp>
+#include <time.h>
 
 #ifdef __USE_SDL
   #include <SDL.h>
@@ -47,7 +48,7 @@ int main(int argc, char** argv) {
 
     // Get the vector of legal actions
     ActionVect legal_actions = ale.getLegalActionSet();
-
+    clock_t t = clock();
     // Play 10 episodes
     for (int episode=0; episode<10; episode++) {
         float totalReward = 0;
@@ -60,6 +61,6 @@ int main(int argc, char** argv) {
         cout << "Episode " << episode << " ended with score: " << totalReward << endl;
         ale.reset_game();
     }
-
+    std::cout << clock() - t << std::endl;
     return 0;
 }

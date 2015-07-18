@@ -87,7 +87,7 @@ target_link_libraries(ale-c-lib ${LINK_LIBS})
 
 if(BUILD_EXAMPLES)
   link_directories(${CMAKE_CURRENT_SOURCE_DIR})
-  add_executable(sharedLibraryInterfaceExample ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples/sharedLibraryInterfaceExample.cpp)
+  add_executable(sharedLibraryInterfaceExample ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples/sharedLibraryInterfaceExample_server.cpp)
   set_target_properties(sharedLibraryInterfaceExample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/examples)
   target_link_libraries(sharedLibraryInterfaceExample ale)
   target_link_libraries(sharedLibraryInterfaceExample ${LINK_LIBS})

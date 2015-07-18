@@ -22,6 +22,10 @@
 #include <vector>
 #include <cstdio>
 #include <cstdlib>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 // From RL-Glue agent example.
 int randInRange(int max){
@@ -84,15 +88,15 @@ bool readData(FILE* alePipe) {
 }
 
 
-void agentMain(FILE* alePipe) {
+void agentMain(FILE* alePipe ) {
 
     // Read in screen width and height
     char buffer[1024];
     fgets(buffer, sizeof(buffer), alePipe);
 
     std::cout << "ALE says: " << buffer << std::endl;
-    
-    // Request RAM & RL data from ALE 
+
+   // Request RAM & RL data from ALE
     fputs("0,1,0,1\n", alePipe);
 
     int frameNumber = 0;
@@ -111,7 +115,8 @@ void agentMain(FILE* alePipe) {
         fprintf(alePipe, "%d,%d\n", randInRange(17), 18);
     }
 
-    std::cout << "Episode lasted " << frameNumber << " frames" << std::endl; 
+    std::cout << "Episode lasted " << frameNumber << " frames" << std::endl;
+//    std::cout << "Episode lasted " << " frames" << std::endl;
 }
 
 
@@ -123,19 +128,48 @@ int main(int argc, char** argv) {
             "executable ('ale')." << std::endl;
         return 1;
     }
-    
+
+
+    const char * myfifo = "/tmp/fifointerface";
+
+    /* create the FIFO (named pipe) */
+    mkfifo(myfifo, 0666);
+
+    /* write "Hi" to the FIFO */
+//    FILE* remoteAleR = popen(myfifo, O_RDWR);
+//    write(fd, "Hi", sizeof("Hi"));
+//    close(fd);
+
+
     std::string romFile(argv[1]);
+//
+//    // We actually fork two processes, ALE itself and an agent
+    //std::string aleCmd("/home/anp/Arcade-Learning-Environment/ale -game_controller fifo -display_screen true");
+    std::string ncCmd("nc localhost 1567 > ");
+    ncCmd += myfifo;
 
-    // We actually fork two processes, ALE itself and an agent
-    std::string aleCmd("./ale -game_controller fifo ");
-    aleCmd += romFile;
-    
-    // Spawn the ALE in read/write mode 
-    // We could also use named pipes but that is a bit messier
-    FILE* alePipe = popen(aleCmd.c_str(), "r+");
-    
-    // Now run the agent & communicate with the ale
-    agentMain(alePipe);
+//    std::string aleCmd("/home/anp/Arcade-Learning-Environment/ale");
+//    aleCmd += romFile;
+//    
+//    // Spawn the ALE in read/write mode 
+//    // We could also use named pipes but that is a bit messier
+    FILE* remoteAleW = popen(nc./
+                                     Cmd,"w" );
+    if (remoteAleW ==NULL){
 
-    pclose(alePipe);
+        std::cout << "Error opening file\n" << std::endl;
+
+        pclose(remoteAleW);
+        unlink(myfifo);
+
+        exit(1);
+    }
+//    ,
+//    // Now run the agent & communicate with the ale
+    agentMain(remoteAleW);
+//
+    pclose(remoteAleW);
+     /* remove the FIFO */
+    unlink(myfifo);
+//    close(fd);
 }
